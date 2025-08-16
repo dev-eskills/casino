@@ -64,6 +64,7 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "members", element: <Members /> },
+      { path: "member/:id", element: <UserProfile/>},
       { path: "games", element: <Games /> },
       { path: "deposits", element: <Transactions /> },
       { path: "deposits-approve", element: <RechargeApprove /> },

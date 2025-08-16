@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { User, Coins, Edit2, Save } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { User, Coins, Edit2 } from "lucide-react";
 import { useSingleUser } from "../../hooks/useAdminUsers";
 import { useAuthStore } from "../../stores/useAuthStore";
 
 const UserProfilePage = () => {
-  const user = useAuthStore((state) => state.user);
-  const { singleUser } = useSingleUser(user?._id);
+  const { id: paramId } = useParams();
+  const loggedInUser = useAuthStore((state) => state.user);
 
-  const [editedStatus, setEditedStatus] = useState(singleUser?.status);
+  // if admin → profileId from params, else → own profile
+  const profileId =
+    loggedInUser?.role === "admin" ? paramId : loggedInUser?._id;
+
+  const { singleUser } = useSingleUser(profileId);
+
   const [activeTab, setActiveTab] = useState("Personal Info");
-
-  const handleStatusUpdate = () =>
-    setUser({ ...singleUser, status: editedStatus });
 
   const tabs = ["Personal Info", "Balance", "Status"];
 
@@ -22,11 +25,13 @@ const UserProfilePage = () => {
     </div>
   );
 
+  if (!singleUser) return <p className="text-white">Loading...</p>;
+
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-[#17071d] to-[#201126] text-white">
+    <div className="min-h-screen text-white">
       <div className="mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 ">
+        <div className="flex items-center gap-4">
           <div className="w-16 h-16 text-yellow-600 rounded-full flex items-center justify-center">
             <User size={32} />
           </div>
@@ -56,7 +61,7 @@ const UserProfilePage = () => {
         <div>
           {activeTab === "Personal Info" && (
             <div className="space-y-4">
-              <div className="bg-darkViolet  p-4 shadow-md">
+              <div className="bg-darkViolet p-4 shadow-md">
                 <h2 className="text-gray-200 font-semibold mb-3">
                   Personal Data
                 </h2>
@@ -92,11 +97,7 @@ const UserProfilePage = () => {
               <h2 className="flex items-center gap-2 text-gray-200 font-semibold mb-3">
                 <Edit2 size={18} /> Status
               </h2>
-              <div className="space-y-3">
-                <div>
-                  <InfoRow label="Current Status:" value={singleUser?.status} />
-                </div>
-              </div>
+              <InfoRow label="Current Status" value={singleUser?.status} />
             </div>
           )}
         </div>

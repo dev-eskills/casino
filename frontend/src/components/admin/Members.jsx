@@ -6,17 +6,30 @@ import { useAdminUsers } from "../../hooks/useAdminUsers";
 import ActionButton from "./ActionButton";
 import Pagination from "../ui/Pagination";
 import TableSkeleton from "../ui/Skeletons/TableSkeleton";
+import { useNavigate } from "react-router-dom";
 
 const Members = () => {
-  const { adminAllUsers = [], adminAllUsersLoading, deleteUser } = useAdminUsers();
+  const {
+    adminAllUsers = [],
+    adminAllUsersLoading,
+    deleteUser,
+    updateStatusFn,
+  } = useAdminUsers();
 
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    setPage(1); // reset to first page after searching
+    setPage(1);
+  };
+
+  const handleUpdateStatus = async (user) => {
+    const newStatus = user.status === "active" ? "banned" : "active";
+
+    updateStatusFn({ id: user._id, status: newStatus });
   };
 
   // Filtered users (memoized for performance)
@@ -109,11 +122,16 @@ const Members = () => {
                       label="Profile"
                       color="blue"
                       icon={<Folder size={16} className="-ml-1" />}
+                      onClick={() => navigate(`/admin/member/${user._id}`)}
                     />
                     <ActionButton
-                      label="Ban User"
-                      color="orange"
+                      label={
+                        user.status === "active" ? "Ban User" : "Activate User"
+                      }
+                      color={user.status === "active" ? "orange" : "green"}
                       icon={<Lock size={16} className="-ml-1" />}
+                      onClick={() => handleUpdateStatus(user)}
+                      disabled={updateStatusFn.isLoading}
                     />
                     <ActionButton
                       label="Delete User"

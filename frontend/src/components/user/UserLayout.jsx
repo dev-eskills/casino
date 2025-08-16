@@ -6,10 +6,17 @@ import UserSidebar from "./UserSidebar";
 const UserLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    const handleResize = () => setIsSidebarOpen(window.innerWidth >= 768);
+    handleResize(); // run once on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <Header onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)} />
+      <Header onToggleSidebar={() => setIsSidebarOpen((p) => !p)} />
 
       <div className="flex flex-1">
         {/* Sidebar */}

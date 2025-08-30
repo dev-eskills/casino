@@ -69,13 +69,20 @@ const ChipManager = ({ children, userId, round, phase }) => {
           return prev;
         }
 
-        // --- Column or Dozen: only one bet per type allowed, show toast once ---
-        const hasConflict =
-          (betType.type === "column" &&
-            prev.some((b) => b.type === "column")) ||
-          (betType.type === "dozen" && prev.some((b) => b.type === "dozen"));
-        if (hasConflict) {
-          toast(`You can only bet on one ${betType.type} at a time.`);
+        // --- Column: only one column bet allowed ---
+        if (
+          betType.type === "column" &&
+          prev.some((b) => b.type === "column" && b.number !== betType.number)
+        ) {
+          toast("You can only bet on one column at a time.");
+          return prev;
+        }
+        // --- Dozen: only one dozen bet allowed ---
+        if (
+          betType.type === "dozen" &&
+          prev.some((b) => b.type === "dozen" && b.number !== betType.number)
+        ) {
+          toast("You can only bet on one dozen at a time.");
           return prev;
         }
 
@@ -84,7 +91,7 @@ const ChipManager = ({ children, userId, round, phase }) => {
           (betType.type === "low" && prev.some((b) => b.type === "high")) ||
           (betType.type === "high" && prev.some((b) => b.type === "low"))
         ) {
-          toast("You can only bet on low or high, not both.");
+           toast("You can only bet on low or high, not both.");
           return prev;
         }
 
@@ -94,7 +101,7 @@ const ChipManager = ({ children, userId, round, phase }) => {
           (betType.type === "even" && prev.some((b) => b.type === "odd")) ||
           (betType.type === "odd" && prev.some((b) => b.type === "even"))
         ) {
-          toast("You can only bet on low or high, not both.");
+          toast("You can only bet on even or odd, not both.");
           return prev;
         }
 
